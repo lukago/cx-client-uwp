@@ -5,9 +5,20 @@
     <e p="C:\Users\User\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_Currency.Client.1487425669.00" t="ExcludeRecursive" />
     <e p="C:\Users\User\Source\Repos\cx\Currency.Client" t="IncludeFlat">
       <e p="Currency.Client.Model" t="IncludeRecursive">
+        <e p="Api" t="Include">
+          <e p="HttpNbpClient.cs" t="Include" />
+          <e p="HttpRestCountriesClient.cs" t="Include" />
+          <e p="ICountriesApi.cs" t="Include" />
+          <e p="INbpApi.cs" t="Include" />
+        </e>
         <e p="bin" t="ExcludeRecursive" />
         <e p="Currency.Client.Model.csproj" t="IncludeRecursive" />
-        <e p="ExchangeRatesTable.cs" t="Include" />
+        <e p="Entity" t="Include">
+          <e p="DownloadList.cs" t="Include" />
+          <e p="ExchangeRatesTable.cs" t="Include" />
+          <e p="Props.cs" t="Include" />
+          <e p="Rate.cs" t="Include" />
+        </e>
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
             <e p="netstandard2.0" t="Include">
@@ -15,16 +26,12 @@
             </e>
           </e>
         </e>
-        <e p="Props.cs" t="Include" />
-        <e p="Rate.cs" t="Include" />
         <e p="Service" t="Include">
           <e p="CurrencyTableService.cs" t="Include" />
-          <e p="HttpNbpClient.cs" t="Include" />
-          <e p="HttpRestCountriesClient.cs" t="Include" />
-          <e p="ICountriesApi.cs" t="Include" />
           <e p="ICurrencyTableService.cs" t="Include" />
+        </e>
+        <e p="Storage" t="Include">
           <e p="IDao.cs" t="Include" />
-          <e p="INbpApi.cs" t="Include" />
           <e p="JsonDao.cs" t="Include" />
         </e>
       </e>

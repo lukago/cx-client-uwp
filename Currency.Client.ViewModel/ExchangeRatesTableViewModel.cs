@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Currency.Client.Model;
+using Currency.Client.Model.Entity;
 using Currency.Client.Model.Service;
+using Currency.Client.Model.Storage;
 
 namespace Currency.Client.ViewModel
 {
     public sealed class ExchangeRatesTableViewModel : INotifyPropertyChanged, IPersistable
     {
-        private readonly IDao<Props> _dao;
         private readonly ICurrencyTableService _currencyTableService;
+        private readonly IDao<Props> _dao;
 
         public ExchangeRatesTableViewModel()
         {
@@ -28,7 +30,6 @@ namespace Currency.Client.ViewModel
             Rates = new ObservableCollection<Rate>();
             LoadStateCommand = new DelegateCommand(async () => await LoadStateAsync());
             LoadRatesCommand = new DelegateCommand(async () => await LoadRatesAsync(SelectedDate));
-            LoadStateCommand.Execute(null);
         }
 
         public ObservableCollection<Rate> Rates { get; set; }
@@ -47,16 +48,18 @@ namespace Currency.Client.ViewModel
         public async Task LoadRatesAsync(DateTime dateTime)
         {
             IsLoading = true;
-            List<Rate> rates = await _currencyTableService.FetchRatesForDateWithFlagsAsync(dateTime);
+            List<Rate> rates = await _currencyTableService.FetchRatesForDateAsync(dateTime);
             Rates.Clear();
             rates.ForEach(Rates.Add);
+            DownloadList<Rate> ratesWithFlag = _currencyTableService.FetchFlagsForRates(rates);
+            while (!ratesWithFlag.IsFinished()) UpdateRatesWithNewValue(await ratesWithFlag.GetNextFinishedAsync());
             IsLoading = false;
         }
 
         public async Task LoadStateAsync()
         {
             IsLoading = true;
-            Props props = await _dao.ReadAsync();
+            var props = await _dao.ReadAsync();
             SelectedDate = props?.TableDateTime ?? SelectedDate;
             LoadRatesCommand.Execute(null);
             IsLoading = false;
@@ -65,6 +68,12 @@ namespace Currency.Client.ViewModel
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void UpdateRatesWithNewValue(Rate rate)
+        {
+            var foundRate = Rates.SingleOrDefault(r => r.Code.Equals(rate.Code));
+            if (foundRate != null) Rates[Rates.IndexOf(foundRate)] = rate;
         }
     }
 }

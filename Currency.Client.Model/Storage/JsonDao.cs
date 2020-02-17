@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Currency.Client.Model.Service
+namespace Currency.Client.Model.Storage
 {
-    public class JsonDao<T>: IDao<T> 
+    public class JsonDao<T> : IDao<T>
     {
-        private readonly Func<string, Task> _streamWriter;
         private readonly Func<Task<string>> _streamReader;
+        private readonly Func<string, Task> _streamWriter;
 
         public JsonDao(Func<string, Task> streamWriter, Func<Task<string>> streamReader)
         {

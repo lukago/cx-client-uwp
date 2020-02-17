@@ -1,7 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace Currency.Client.Model.Service
+namespace Currency.Client.Model.Api
 {
     public interface ICountriesApi
     {

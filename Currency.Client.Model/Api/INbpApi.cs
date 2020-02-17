@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Currency.Client.Model.Entity;
 
-namespace Currency.Client.Model.Service
+namespace Currency.Client.Model.Api
 {
     public interface INbpApi
     {

@@ -6,7 +6,7 @@ namespace Currency.Client.Uwp
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Currency.Client.Model
+namespace Currency.Client.Model.Entity
 {
     public class ExchangeRatesTable
     {

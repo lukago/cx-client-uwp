@@ -17,24 +17,24 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0" Grid.Row="0" 
+                        <Image Grid.Column="0" Grid.Row="0"
                                Source="{Binding Flag}"
                                Width="32" Height="32"
                                HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <TextBlock Grid.Row="0" Grid.Column="1" 
+                        <TextBlock Grid.Row="0" Grid.Column="1"
                                    Text="{Binding Code}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Style="{ThemeResource BaseTextBlockStyle}" />
-                        <TextBlock Grid.Row="0" Grid.Column="2" 
-                                   Text="{Binding Currency}" 
+                        <TextBlock Grid.Row="0" Grid.Column="2"
+                                   Text="{Binding Currency}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Style="{ThemeResource BaseTextBlockStyle}" />
-                        <TextBlock Grid.Row="0" Grid.Column="3" 
+                        <TextBlock Grid.Row="0" Grid.Column="3"
                                    Text="{Binding Mid}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                    Style="{ThemeResource BaseTextBlockStyle}" />

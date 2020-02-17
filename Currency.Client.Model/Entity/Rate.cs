@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Currency.Client.Model
+namespace Currency.Client.Model.Entity
 {
     public class Rate
     {
