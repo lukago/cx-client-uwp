@@ -17,6 +17,9 @@ namespace Currency.Client.ViewModel
         private readonly ICurrencyTableService _currencyTableService;
         private readonly IDao<Props> _dao;
 
+        private DateTimeOffset _dateTime;
+        private bool _empty;
+
         public ExchangeRatesTableViewModel()
         {
         }
@@ -25,17 +28,38 @@ namespace Currency.Client.ViewModel
         {
             _currencyTableService = currencyTableService;
             _dao = dao;
-            IsLoading = false;
-            SelectedDate = DateTime.Now;
+            IsEmpty = true;
             Rates = new ObservableCollection<Rate>();
             LoadStateCommand = new DelegateCommand(async () => await LoadStateAsync());
-            LoadRatesCommand = new DelegateCommand(async () => await LoadRatesAsync(SelectedDate));
+            LoadRatesCommand = new DelegateCommand(async () => await LoadRatesAsync(SelectedDate.DateTime));
+            LoadStateCommand.Execute(null);
         }
 
         public ObservableCollection<Rate> Rates { get; set; }
         public ICommand LoadRatesCommand { get; set; }
         public ICommand LoadStateCommand { get; set; }
-        public DateTime SelectedDate { get; set; }
+
+        public bool IsEmpty
+        {
+            get => _empty;
+            set
+            {
+                _empty = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public DateTimeOffset SelectedDate
+        {
+            get => _dateTime;
+            set
+            {
+                _dateTime = value; 
+                OnPropertyChanged(); 
+                LoadRatesCommand.Execute(null);
+            }
+        }
+
         public bool IsLoading { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -49,6 +73,7 @@ namespace Currency.Client.ViewModel
         {
             IsLoading = true;
             List<Rate> rates = await _currencyTableService.FetchRatesForDateAsync(dateTime);
+            IsEmpty = rates.Count == 0;
             Rates.Clear();
             rates.ForEach(Rates.Add);
             DownloadList<Rate> ratesWithFlag = _currencyTableService.FetchFlagsForRates(rates);
@@ -61,7 +86,6 @@ namespace Currency.Client.ViewModel
             IsLoading = true;
             var props = await _dao.ReadAsync();
             SelectedDate = props?.TableDateTime ?? SelectedDate;
-            LoadRatesCommand.Execute(null);
             IsLoading = false;
         }
 

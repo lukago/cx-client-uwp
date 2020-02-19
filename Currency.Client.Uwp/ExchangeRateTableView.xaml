@@ -2,27 +2,67 @@
     x:Class="Currency.Client.Uwp.ExchangeRateTableView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ccvm="using:Currency.Client.ViewModel"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     mc:Ignorable="d">
 
-    <UserControl.DataContext>
-        <ccvm:ExchangeRatesTableViewModel />
-    </UserControl.DataContext>
-
     <Grid>
-        <ListView ItemsSource="{Binding Rates}">
-            <ListView.ItemTemplate>
+        <Grid.Resources>
+            <converters:BoolToVisibilityConverter x:Key="BoolConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolInvertedConverter" FalseValue="Visible" TrueValue="Collapsed"/>
+        </Grid.Resources>
+        <TextBlock DataContext="{Binding RatesTable, Source={StaticResource Locator}}"
+            Visibility="{Binding IsEmpty, Converter={StaticResource BoolConverter}}"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            Text="No entries found. Change date using top command bar."
+            Style="{ThemeResource SubtitleTextBlockStyle}"/>
+        <ListView DataContext="{Binding RatesTable, Source={StaticResource Locator}}" 
+                  ItemsSource="{Binding Rates}"
+                  Visibility="{Binding IsEmpty, Converter={StaticResource BoolInvertedConverter}}">
+            <ListView.HeaderTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid Margin="30,40,28,30">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0*"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
                             <ColumnDefinition />
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Image Grid.Column="0" Grid.Row="0"
+                        <TextBlock
+                                   Text="Flag"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Width="40"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}" Grid.Row="1" />
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="Code"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}" />
+                        <TextBlock Grid.Row="1" Grid.Column="2"
+                                   Text="Currency"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}" />
+                        <TextBlock Grid.Row="1" Grid.Column="3"
+                                   Text="Mid"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.HeaderTemplate>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="15,0,15,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Row="0" Grid.Column="0"
                                Source="{Binding Flag}"
                                Width="32" Height="32"
                                HorizontalAlignment="Center" VerticalAlignment="Center" />

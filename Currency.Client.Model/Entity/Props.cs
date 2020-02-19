@@ -4,11 +4,11 @@ namespace Currency.Client.Model.Entity
 {
     public class Props
     {
-        public Props(DateTime tableDateTime)
+        public Props(DateTimeOffset tableDateTime)
         {
             TableDateTime = tableDateTime;
         }
 
-        public DateTime TableDateTime { get; }
+        public DateTimeOffset TableDateTime { get; }
     }
 }

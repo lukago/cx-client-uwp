@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -28,7 +29,8 @@ namespace Currency.Client.Model.Api
 
         public async Task<ExchangeRatesTable> FetchRatesTableForDateAsync(DateTime dateTime)
         {
-            var response = await _client.GetAsync($"/api/exchangerates/tables/a/{dateTime:yyyy-MM-dd}");
+            HttpResponseMessage response = await _client.GetAsync($"/api/exchangerates/tables/a/{dateTime:yyyy-MM-dd}");
+            if (!response.IsSuccessStatusCode) return new ExchangeRatesTable("", "", DateTime.Now, new List<Rate>());
             string json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<ExchangeRatesTable[]>(json)[0];
         }
