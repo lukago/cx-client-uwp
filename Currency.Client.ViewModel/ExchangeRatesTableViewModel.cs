@@ -18,7 +18,12 @@ namespace Currency.Client.ViewModel
         private readonly IDao<Props> _dao;
 
         private DateTimeOffset _dateTime;
+        private DateTimeOffset _dateTimeDetailStart;
+        private DateTimeOffset _dateTimeDetailEnd;
+        private Rate _rate;
         private bool _empty;
+        private bool _loadingDetails;
+        private double _loadingDetailsProgress;
 
         public ExchangeRatesTableViewModel()
         {
@@ -29,15 +34,26 @@ namespace Currency.Client.ViewModel
             _currencyTableService = currencyTableService;
             _dao = dao;
             IsEmpty = true;
+            _dateTime = DateTimeOffset.Now;
+            _dateTimeDetailStart = DateTimeOffset.Now;
+            _dateTimeDetailEnd = DateTimeOffset.Now;
             Rates = new ObservableCollection<Rate>();
+            RatesDetails = new ObservableCollection<Rate>();
             LoadStateCommand = new DelegateCommand(async () => await LoadStateAsync());
             LoadRatesCommand = new DelegateCommand(async () => await LoadRatesAsync(SelectedDate.DateTime));
+            LoadDetailsCommand = new DelegateCommand(async () =>
+                await LoadDetailsAsync(SelectedRate, SelectedDateDetailStart, SelectedDateDetailEnd));
             LoadStateCommand.Execute(null);
         }
 
         public ObservableCollection<Rate> Rates { get; set; }
+        public ObservableCollection<Rate> RatesDetails { get; set; }
         public ICommand LoadRatesCommand { get; set; }
+        public ICommand LoadDetailsCommand { get; set; }
         public ICommand LoadStateCommand { get; set; }
+
+        public int MaxYear => DateTime.Now.Year;
+        public int MinYear => 2002;
 
         public bool IsEmpty
         {
@@ -54,19 +70,74 @@ namespace Currency.Client.ViewModel
             get => _dateTime;
             set
             {
-                _dateTime = value; 
-                OnPropertyChanged(); 
+                _dateTime = value;
+                SelectedDateDetailEnd = value;
+                SelectedDateDetailStart = SelectedDateDetailEnd.AddYears(-1);
+                OnPropertyChanged();
                 LoadRatesCommand.Execute(null);
             }
         }
 
+        public DateTimeOffset SelectedDateDetailStart
+        {
+            get => _dateTimeDetailStart;
+            set
+            {
+                _dateTimeDetailStart = value;
+                OnPropertyChanged();
+                LoadDetailsCommand.Execute(null);
+            }
+        }
+
+        public DateTimeOffset SelectedDateDetailEnd
+        {
+            get => _dateTimeDetailEnd;
+            set
+            {
+                _dateTimeDetailEnd = value;
+                OnPropertyChanged();
+                LoadDetailsCommand.Execute(null);
+            }
+        }
+
+        public Rate SelectedRate
+        {
+            get => _rate;
+            set
+            {
+                _rate = value;
+                OnPropertyChanged();
+                LoadDetailsCommand.Execute(null);
+            }
+        }
+
         public bool IsLoading { get; set; }
+ 
+        public bool IsLoadingDetails
+        {
+            get => _loadingDetails;
+            set
+            {
+                _loadingDetails = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double LoadingDetailsProgress
+        {
+            get => _loadingDetailsProgress;
+            set
+            {
+                _loadingDetailsProgress = value;
+                OnPropertyChanged();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void Persist(object sender, object o)
         {
-            _dao.WriteAsync(new Props(SelectedDate));
+            _dao.WriteAsync(new Props(SelectedDate, SelectedRate));
         }
 
         public async Task LoadRatesAsync(DateTime dateTime)
@@ -86,7 +157,22 @@ namespace Currency.Client.ViewModel
             IsLoading = true;
             var props = await _dao.ReadAsync();
             SelectedDate = props?.TableDateTime ?? SelectedDate;
+            SelectedRate = props?.SelectedRate;
             IsLoading = false;
+        }
+
+        private async Task LoadDetailsAsync(Rate selectedRate,
+            DateTimeOffset selectedDateDetailStart,
+            DateTimeOffset selectedDateDetailEnd)
+        {
+            if (selectedRate == null) return;
+            IsLoadingDetails = true;
+            List<Rate> rates = await _currencyTableService.FetchRatesForCodeAsync(
+                selectedRate, selectedDateDetailStart.DateTime, selectedDateDetailEnd.DateTime, (d) => LoadingDetailsProgress = d);
+            
+            RatesDetails = new ObservableCollection<Rate>(rates);
+            OnPropertyChanged("RatesDetails");
+            IsLoadingDetails = false;
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)

@@ -59,8 +59,6 @@
             <e p="Debug" t="Include">
               <e p="App.g.cs" t="Include" />
               <e p="App.g.i.cs" t="Include" />
-              <e p="DetailPage.g.cs" t="Include" />
-              <e p="DetailPage.g.i.cs" t="Include" />
               <e p="ExchangeRateTableView.g.cs" t="Include" />
               <e p="ExchangeRateTableView.g.i.cs" t="Include" />
               <e p="MainPage.g.cs" t="Include" />

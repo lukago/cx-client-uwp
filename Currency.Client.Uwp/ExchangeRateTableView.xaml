@@ -4,88 +4,205 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
+    xmlns:sf="using:Syncfusion.UI.Xaml.Charts"
     mc:Ignorable="d">
 
     <Grid>
         <Grid.Resources>
             <converters:BoolToVisibilityConverter x:Key="BoolConverter" />
-            <converters:BoolToVisibilityConverter x:Key="BoolInvertedConverter" FalseValue="Visible" TrueValue="Collapsed"/>
+            <converters:BoolToVisibilityConverter x:Key="BoolInvertedConverter" FalseValue="Visible"
+                                                  TrueValue="Collapsed" />
+            <converters:FormatStringConverter x:Key="StringFormat" />
         </Grid.Resources>
-        <TextBlock DataContext="{Binding RatesTable, Source={StaticResource Locator}}"
-            Visibility="{Binding IsEmpty, Converter={StaticResource BoolConverter}}"
-            HorizontalAlignment="Center" VerticalAlignment="Center"
-            Text="No entries found. Change date using top command bar."
-            Style="{ThemeResource SubtitleTextBlockStyle}"/>
-        <ListView DataContext="{Binding RatesTable, Source={StaticResource Locator}}" 
-                  ItemsSource="{Binding Rates}"
-                  Visibility="{Binding IsEmpty, Converter={StaticResource BoolInvertedConverter}}">
-            <ListView.HeaderTemplate>
+        <controls:MasterDetailsView BackButtonBehavior="Automatic"
+                                    DataContext="{Binding RatesTable, Source={StaticResource Locator}}"
+                                    ItemsSource="{Binding Rates}"
+                                    NoSelectionContent="Select an item to view"
+                                    MasterPaneWidth="500"
+                                    CompactModeThresholdWidth="720"
+                                    SelectedItem="{Binding SelectedRate, Mode=TwoWay}">
+            <controls:MasterDetailsView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="30,40,28,30">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="0*"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock
-                                   Text="Flag"
+                    <Grid>
+                        <TextBlock DataContext="{Binding RatesTable, Source={StaticResource Locator}}"
+                                   Visibility="{Binding IsEmpty, Converter={StaticResource BoolConverter}}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Width="40"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}" Grid.Row="1" />
-                        <TextBlock Grid.Row="1" Grid.Column="1"
-                                   Text="Code"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Text="No entries found. Change date using top command bar."
                                    Style="{ThemeResource SubtitleTextBlockStyle}" />
-                        <TextBlock Grid.Row="1" Grid.Column="2"
-                                   Text="Currency"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}" />
-                        <TextBlock Grid.Row="1" Grid.Column="3"
-                                   Text="Mid"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}" />
+                        <Grid Margin="15,0,15,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Row="0" Grid.Column="0"
+                                   Source="{Binding Flag}"
+                                   Width="32" Height="32"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Code}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Style="{ThemeResource BaseTextBlockStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="2"
+                                       Text="{Binding Currency}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Style="{ThemeResource BaseTextBlockStyle}" />
+                            <TextBlock Grid.Row="0" Grid.Column="3"
+                                       Text="{Binding Mid}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Style="{ThemeResource BaseTextBlockStyle}" />
+                        </Grid>
                     </Grid>
                 </DataTemplate>
-            </ListView.HeaderTemplate>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="15,0,15,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Image Grid.Row="0" Grid.Column="0"
-                               Source="{Binding Flag}"
-                               Width="32" Height="32"
-                               HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <TextBlock Grid.Row="0" Grid.Column="1"
-                                   Text="{Binding Code}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Style="{ThemeResource BaseTextBlockStyle}" />
-                        <TextBlock Grid.Row="0" Grid.Column="2"
-                                   Text="{Binding Currency}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Style="{ThemeResource BaseTextBlockStyle}" />
-                        <TextBlock Grid.Row="0" Grid.Column="3"
-                                   Text="{Binding Mid}"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                   Style="{ThemeResource BaseTextBlockStyle}" />
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            <ListView.ItemContainerStyle>
+            </controls:MasterDetailsView.ItemTemplate>
+            <controls:MasterDetailsView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
+            </controls:MasterDetailsView.ItemContainerStyle>
+            <controls:MasterDetailsView.MasterHeader>
+                <Grid Margin="30,40,28,30">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0*" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Text="Flag"
+                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                        Width="40"
+                        Style="{ThemeResource SubtitleTextBlockStyle}" Grid.Row="1" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="Code"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Style="{ThemeResource SubtitleTextBlockStyle}" />
+                    <TextBlock Grid.Row="1" Grid.Column="2"
+                               Text="Currency"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Style="{ThemeResource SubtitleTextBlockStyle}" />
+                    <TextBlock Grid.Row="1" Grid.Column="3"
+                               Text="Mid"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Style="{ThemeResource SubtitleTextBlockStyle}" />
+                </Grid>
+            </controls:MasterDetailsView.MasterHeader>
+            <controls:MasterDetailsView.DetailsTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Visibility="{Binding RatesTable.IsLoadingDetails, 
+                                      Source={StaticResource Locator}, 
+                                      Converter={StaticResource BoolConverter}}"/>
+                        <Grid Margin="24">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.1*" />
+                                <RowDefinition Height="0.1*" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="{Binding Code}" Grid.Row="0"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Style="{ThemeResource SubheaderTextBlockStyle}" />
+                            <TextBlock Text="{Binding Currency}" Grid.Row="1"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+                            <sf:SfChart Grid.Row="2"
+                                        DataContext="{Binding RatesTable, Source={StaticResource Locator}}">
+                                <sf:SfChart.PrimaryAxis>
+                                    <sf:DateTimeAxis Header="Date" />
+                                </sf:SfChart.PrimaryAxis>
+                                <sf:SfChart.SecondaryAxis>
+                                    <sf:NumericalAxis Header="Mid" />
+                                </sf:SfChart.SecondaryAxis>
+                                <sf:LineSeries ItemsSource="{Binding RatesDetails}" XBindingPath="EffectiveDate"
+                                               YBindingPath="Mid" />
+                            </sf:SfChart>
+
+                        </Grid>
+
+                    </Grid>
+                </DataTemplate>
+            </controls:MasterDetailsView.DetailsTemplate>
+            <controls:MasterDetailsView.NoSelectionContentTemplate>
+                <DataTemplate>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <SymbolIcon Symbol="Calendar" RenderTransformOrigin=".5,.5">
+                            <SymbolIcon.RenderTransform>
+                                <CompositeTransform ScaleX="2" ScaleY="2" />
+                            </SymbolIcon.RenderTransform>
+                        </SymbolIcon>
+                        <TextBlock Text="{Binding}" FontSize="24" Margin="0,12" />
+                    </StackPanel>
+                </DataTemplate>
+            </controls:MasterDetailsView.NoSelectionContentTemplate>
+            <controls:MasterDetailsView.MasterCommandBar>
+                <CommandBar>
+                    <AppBarButton Icon="Calendar" Label="Change date">
+                        <Button.Flyout>
+                            <DatePickerFlyout
+                                MaxYear="{Binding MaxYear}"
+                                MinYear="{Binding MinYear}"
+                                Date="{Binding RatesTable.SelectedDate, Source={StaticResource Locator}, Mode=TwoWay}" />
+                        </Button.Flyout>
+                    </AppBarButton>
+
+                    <CommandBar.Content>
+                        <TextBlock
+                            Text="{Binding RatesTable.SelectedDate.DateTime, 
+                            Converter={StaticResource StringFormat},
+                            ConverterParameter='yyyy-MM-dd',
+                            Source={StaticResource Locator}, Mode=OneWay}"
+                            Margin="12,14" />
+                    </CommandBar.Content>
+                </CommandBar>
+            </controls:MasterDetailsView.MasterCommandBar>
+            <controls:MasterDetailsView.DetailsCommandBar>
+                <CommandBar>
+                    <AppBarButton Icon="Calendar" Label="Change date start">
+                        <Button.Flyout>
+                            <DatePickerFlyout
+                                MaxYear="{Binding MaxYear}"
+                                MinYear="{Binding MinYear}"
+                                Date="{Binding RatesTable.SelectedDateDetailStart, Source={StaticResource Locator}, Mode=TwoWay}" />
+                        </Button.Flyout>
+                    </AppBarButton>
+                    <AppBarButton Icon="Calendar" Label="Change date end">
+                        <Button.Flyout>
+                            <DatePickerFlyout
+                                MaxYear="{Binding MaxYear}"
+                                MinYear="{Binding MinYear}"
+                                Date="{Binding RatesTable.SelectedDateDetailEnd, Source={StaticResource Locator}, Mode=TwoWay}" />
+                        </Button.Flyout>
+                    </AppBarButton>
+
+                    <CommandBar.Content>
+                        <RelativePanel>
+                            <TextBlock x:Name="TextBlockStart"
+                                       Text="{Binding RatesTable.SelectedDateDetailStart.DateTime, 
+                            Converter={StaticResource StringFormat},
+                            ConverterParameter='yyyy-MM-dd',
+                            Source={StaticResource Locator}, Mode=OneWay}"
+                                       Margin="12,14" />
+                            <TextBlock x:Name="TextBlockEnd"
+                                       Text="{Binding RatesTable.SelectedDateDetailEnd.DateTime, 
+                            Converter={StaticResource StringFormat},
+                            ConverterParameter='yyyy-MM-dd',
+                            Source={StaticResource Locator}, Mode=OneWay}"
+                                       Margin="12,14"
+                                       RelativePanel.RightOf="TextBlockStart" />
+                        </RelativePanel>
+                    </CommandBar.Content>
+                </CommandBar>
+            </controls:MasterDetailsView.DetailsCommandBar>
+        </controls:MasterDetailsView>
     </Grid>
 </UserControl>

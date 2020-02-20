@@ -34,5 +34,16 @@ namespace Currency.Client.Model.Api
             string json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<ExchangeRatesTable[]>(json)[0];
         }
+        
+        public async Task<List<Rate>> FetchRatesTableForCodeBetweenDatesAsync(string code, 
+            DateTime startTime, 
+            DateTime endTime)
+        {
+            HttpResponseMessage response = await _client
+                .GetAsync($"/api/exchangerates/rates/a/{code}/{startTime:yyyy-MM-dd}/{endTime:yyyy-MM-dd}");
+            if (!response.IsSuccessStatusCode) return new List<Rate>();
+            string json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ExchangeRatesTable>(json).Rates;
+        }
     }
 }

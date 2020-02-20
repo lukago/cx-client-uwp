@@ -18,6 +18,55 @@ namespace Currency.Client.Model.Service
             _countriesApi = countriesApi;
         }
 
+        public async Task<List<Rate>> FetchRatesForCodeAsync(Rate rate, DateTime startTime, 
+            DateTime endTime,
+            Action<double> progressAction)
+        {
+            DateTime st;
+            var rates = new List<Rate>();
+            var diff = endTime - startTime;
+            double progress = 1.0 / (diff.Days / 365.0);
+            double progressBar = 0;
+            for (st = startTime; endTime - st > TimeSpan.FromDays(365); st = st.AddDays(365))
+            {
+                List<Rate> newRates = await _nbpApi.FetchRatesTableForCodeBetweenDatesAsync(rate.Code, st, st.AddDays(365));
+                await Task.Run(() =>
+                {
+                    List<Rate> ratesReduced = new List<Rate>();
+                    for (int i = 0; i < newRates.Count; i+=5)
+                    {
+                        ratesReduced.Add(newRates[i]);
+                    }
+                    rates.AddRange(ratesReduced);
+                });
+                progressBar += progress;
+                progressAction.Invoke(progressBar);
+            }
+            
+            List<Rate> lastRates = await _nbpApi.FetchRatesTableForCodeBetweenDatesAsync(rate.Code, st, endTime);
+            await Task.Run(() =>
+            {
+                if (diff > TimeSpan.FromDays(100))
+                {
+                    List<Rate> ratesReducedLast = new List<Rate>();
+                    for (int i = 0; i < lastRates.Count; i += 5)
+                    {
+                        ratesReducedLast.Add(lastRates[i]);
+                    }
+
+                    rates.AddRange(ratesReducedLast);
+                }
+                else
+                {
+                    xrates.AddRange(lastRates);
+                }
+            });
+            progressBar += progress;
+            progressAction.Invoke(progressBar);
+
+            return rates;
+        }
+        
         public async Task<List<Rate>> FetchRatesForDateAsync(DateTime dateTime)
         {
             var table = await _nbpApi.FetchRatesTableForDateAsync(dateTime);
@@ -34,7 +83,7 @@ namespace Currency.Client.Model.Service
         {
             string countryCode = await _countriesApi.FetchCountryCodeByCurrencyCode(rate.Code);
             var flagUri = new Uri($"https://www.countryflags.io/{countryCode}/flat/64.png");
-            return new Rate(rate.Code, rate.Currency, rate.Mid, flagUri);
+            return new Rate(rate.Code, rate.Currency, rate.Mid, flagUri, rate.EffectiveDate);
         }
     }
 }

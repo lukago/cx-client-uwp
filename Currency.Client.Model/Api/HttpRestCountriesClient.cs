@@ -27,7 +27,6 @@ namespace Currency.Client.Model.Api
             if ("EUR".Equals(currencyCode) || "XDR".Equals(currencyCode)) return "EU";
 
             var response = await _client.GetAsync($"/rest/v2/currency/{currencyCode}");
-            await Task.Run(() => Thread.Sleep(200));
             string json = await response.Content.ReadAsStringAsync();
             var token = JToken.Parse(json);
             return token is JArray
